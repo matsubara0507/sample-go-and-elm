@@ -1,0 +1,27 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@rules_elm//elm:def.bzl", "elm_dependencies", "elm_make", "elm_test")
+
+elm_dependencies(
+    name = "deps",
+    elm_json = "elm.json",
+)
+
+elm_make(
+    name = "index",
+    srcs = glob(["**"]),
+    elm_home = ":deps",
+    elm_json = "elm.json",
+    main = "src/Main.elm",
+    optimize = True,
+    output = "index.html",
+)
+
+go_library(
+    name = "front",
+    srcs = ["embed.go"],
+    embedsrcs = [
+        ":index",  # keep
+    ],
+    importpath = "github.com/matsubara0507/sample-go-and-elm/front",
+    visibility = ["//visibility:public"],
+)
